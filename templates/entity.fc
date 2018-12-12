@@ -1,0 +1,61 @@
+package ${packageName}.entity;
+
+import javax.persistence.Id;
+import java.io.Serializable;
+<%packages.forEach(p=>{%>import ${p};
+<%})%>
+/**
+ * ${modelRemark}实体</p>
+ * ${modelName} 对应数据库表 ${tableName}
+ * @author ${author}
+ * @project ${project}
+ * @date  ${now}
+ */
+public class ${modelName} implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+
+
+	<% for(var i in columns){
+        var item=columns[i];
+   %><%if(item.remark&&item.remark!=""){%>
+    //${item.remark}<%}%><%if(item.fieldName==idField){%>
+    @Id<%}%>
+    private ${item.typeName} ${item.fieldName};
+    <%}%>
+
+	//set 和 get方法
+	
+	<% for(var i in columns){
+	    var item=columns[i];
+	%>
+	/**
+	 * ${item.remark}
+	 *
+	 * @param ${item.fieldName}
+	 */
+	public void set{{item.fieldName | up_first}}(${item.typeName} ${item.fieldName}) {
+
+        this.${item.fieldName} = ${item.fieldName};
+    }
+
+	/**
+     * ${item.remark}
+     *
+     * @return ${item.typeName}
+     */
+    public ${item.typeName} get{{item.fieldName | up_first}}() {
+
+        return this.${item.fieldName};
+    }
+	<%}%>
+	
+	@Override
+	public String toString() {
+		<%
+		 var fields=[];
+		 columns.forEach(item=>fields.push(`${item.fieldName}="+${item.fieldName}+"`))
+		%>
+		return "${modelName} [<%=#fields.join(',')%>]";
+	}
+}

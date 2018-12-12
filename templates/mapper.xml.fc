@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="${packageName}.dao.${modelName}Mapper" >
+	
+    <resultMap id="BaseResultMap" type="${packageName}.entity.${modelName}" >
+        <id column="${idColumn}" property="${idField}"/>
+        <%for(var i in columns){var item=columns[i];%><%if(item.fieldName!=idField){%><result column="${item.columnName}" property="${item.fieldName}" jdbcType="${item.type}" />
+        <%}%><%}%>
+    </resultMap>
+    <%var fields=[];
+     columns.forEach(item=>fields.push(item.columnName))
+    %>
+    <sql id="Base_Column_List" >
+        <%=#fields.join(",")%>
+    </sql>
+
+</mapper>

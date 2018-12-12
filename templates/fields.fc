@@ -1,0 +1,8 @@
+${modelRemark}字段列表
+
+字段名 类型  备注
+<%for(var i in columns){
+var item=columns[i];
+%>
+${item.fieldName}   ${item.typeName} ${item.remark}
+<%}%>

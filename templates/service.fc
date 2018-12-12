@@ -1,0 +1,13 @@
+package ${packageName}.service;
+
+import ${packageName}.entity.${modelName};
+/**
+ * ${modelRemark} Service
+ * @author ${author}
+ * @project ${project}
+ * @date  ${now}
+ */
+public interface ${modelName}Service extends BaseService<${modelName}>{
+
+
+}

@@ -1,0 +1,93 @@
+package ${packageName}.api.controller;
+
+import ${packageName}.api.utils.Result;
+import ${packageName}.api.utils.StatusCode;
+import ${packageName}.core.utils.DataGrid;
+import ${packageName}.entity.FenceSetting;
+import ${packageName}.service.*;
+import ${packageName}.core.utils.Pager;
+import com.alibaba.dubbo.config.annotation.Reference;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+
+/**
+ * ${modelRemark} 控制器
+ * @author ${author}
+ * @project ${project}
+ * @date  ${now}
+ */
+@Controller
+@RequestMapping("${url}")
+public class ${modelName}Controller extends BaseController{
+
+    <%
+        var variable=$imports.low_first(modelName);
+        var service=variable+"Service";
+     %>
+    @Reference
+    private ${modelName}Service ${service};
+
+    /**
+     * 保存
+     *
+     **/
+    @ResponseBody
+    @RequestMapping("save")
+    public Result save(${modelName} ${variable}) {
+
+        Result result = Result.getError(StatusCode.SYSTEM_ERROR);
+
+        try {
+            int rs=${service}.insertSelective(${variable});
+            result=Result.getSuccess(rs);
+        } catch (Exception e) {
+          log.error("error:",e);
+        }
+        return result;
+    }
+
+    /**
+      * 修改
+     *
+     **/
+    @ResponseBody
+    @RequestMapping("update")
+    public Result update(${modelName} ${variable}) {
+
+        checkValues("id");
+
+        Result result = Result.getError(StatusCode.SYSTEM_ERROR);
+
+        try {
+            int rs=${service}.updateByPrimaryKeySelective(${variable});
+         result=Result.getSuccess(rs);
+        } catch (Exception e) {
+            log.error("error:",e);
+        }
+
+        return result;
+    }
+
+     /**
+      * 获取列表
+      *
+      **/
+    @ResponseBody
+    @RequestMapping("list")
+    public Result getList(Integer pageNo,Integer pageSize,${modelName} ${variable}) {
+        Result result = Result.getError(StatusCode.SYSTEM_ERROR);
+        try {
+            DataGrid dataGrid=${service}.getDataGridByModel(${variable},new Pager(pageNo,pageSize));
+            result=Result.getSuccess(dataGrid);
+        } catch (Exception e) {
+            log.error("error:",e);
+        }
+        return result;
+    }
+
+}
+
+
+

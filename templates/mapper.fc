@@ -1,0 +1,17 @@
+package ${packageName}.dao;
+
+import ${packageName}.entity.${modelName};
+import ${packageName}.utils.MyMapper;
+
+/**
+ * ${modelRemark}
+ * @author ${author}
+ * @project ${project}
+ * @date  ${now}
+ */
+public interface ${modelName}Mapper extends MyMapper<${modelName}> {
+
+
+}
+
+
