@@ -47,7 +47,7 @@ npm start
     |modelName|模块名|
     |idColumn|id列，数据库中的id列，取第一个id字段，多个id字段请自行处理|
     |idField|id字段名，名字根据idColumn生成，生成规则参考[字段取名规则](#字段取名规则)|
-    |columns|列字段[columns字段]()|
+    |columns|列字段[columns字段](#columns字段)|
 
 + columns字段
 
