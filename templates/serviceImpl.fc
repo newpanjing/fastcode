@@ -8,16 +8,17 @@ import com.alibaba.dubbo.config.annotation.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
-* ${modelRemark} Service
-* @author ${author}
-* @project ${project}
-* @date  ${now}
-*/
+ * ${modelRemark} service实现
+ *
+ * @author ${author}
+ * @project ${project}
+ * @date ${now}
+ */
 @Service
 public class ${modelName}ServiceImpl extends BaseServiceImpl<${modelName}> implements ${modelName}Service {
 
 	@Autowired
-	private ${modelName}Mapper {{modelName|low_first}};
+	private ${modelName}Mapper {{modelName|low_first}}Mapper;
 
 
 

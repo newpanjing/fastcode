@@ -5,9 +5,10 @@ import ${packageName}.utils.MyMapper;
 
 /**
  * ${modelRemark}
+ *
  * @author ${author}
  * @project ${project}
- * @date  ${now}
+ * @date ${now}
  */
 public interface ${modelName}Mapper extends MyMapper<${modelName}> {
 

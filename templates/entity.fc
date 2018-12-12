@@ -7,15 +7,14 @@ import java.io.Serializable;
 /**
  * ${modelRemark}实体</p>
  * ${modelName} 对应数据库表 ${tableName}
+ *
  * @author ${author}
  * @project ${project}
- * @date  ${now}
+ * @date ${now}
  */
 public class ${modelName} implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-
-
 	<% for(var i in columns){
         var item=columns[i];
    %><%if(item.remark&&item.remark!=""){%>
@@ -54,7 +53,7 @@ public class ${modelName} implements Serializable {
 	public String toString() {
 		<%
 		 var fields=[];
-		 columns.forEach(item=>fields.push(`${item.fieldName}="+${item.fieldName}+"`))
+		 columns.forEach(item=>fields.push(`${item.fieldName}=" + ${item.fieldName} + "`))
 		%>
 		return "${modelName} [<%=#fields.join(',')%>]";
 	}

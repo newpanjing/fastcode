@@ -3,7 +3,7 @@ package ${packageName}.api.controller;
 import ${packageName}.api.utils.Result;
 import ${packageName}.api.utils.StatusCode;
 import ${packageName}.core.utils.DataGrid;
-import ${packageName}.entity.FenceSetting;
+import ${packageName}.entity.${modelName};
 import ${packageName}.service.*;
 import ${packageName}.core.utils.Pager;
 import com.alibaba.dubbo.config.annotation.Reference;
@@ -14,9 +14,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * ${modelRemark} 控制器
+ *
  * @author ${author}
  * @project ${project}
- * @date  ${now}
+ * @date ${now}
  */
 @Controller
 @RequestMapping("${url}")

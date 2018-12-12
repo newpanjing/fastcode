@@ -1,11 +1,13 @@
 package ${packageName}.service;
 
 import ${packageName}.entity.${modelName};
+
 /**
- * ${modelRemark} Service
+ * ${modelRemark} service
+ *
  * @author ${author}
  * @project ${project}
- * @date  ${now}
+ * @date ${now}
  */
 public interface ${modelName}Service extends BaseService<${modelName}>{
 
