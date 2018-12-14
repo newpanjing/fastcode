@@ -14,27 +14,32 @@ exports.config = {
         //自动创建文件夹
         mkdirs: true
     },
-    templates: [
-        {
-            "template": "entity.fc",
-            "outSuffix": ".java",
-            "outPath": "/tourist-common/src/main/java/com/zh/tourist/entity",
-            "project": "tourist-common",
-            //覆盖文件
-            overwrite: true
-        },
-// , {
-        //     "template": "mapper.fc",
-        //     "outSuffix": "Mapper.java",
-        //     "outPath": "/tourist-service/src/main/java/com/zh/tourist/dao",
-        //     "project": "tourist-service",
-        //     overwrite: true
-        // }, {
-        //     "template": "mapper.xml.fc",
-        //     "outSuffix": "Mapper.xml",
-        //     "outPath": "/tourist-service/src/main/resources/mybatis/mapper",
-        //     overwrite: true
-        // },
+    templates: [{
+        "template": "api.html",
+        "outSuffix": ".html",
+        "outPath": "/doc",
+        "project": "tourist-common",
+        //覆盖文件
+        overwrite: true
+    }, {
+        "template": "entity.fc",
+        "outSuffix": ".java",
+        "outPath": "/tourist-common/src/main/java/com/zh/tourist/entity",
+        "project": "tourist-common",
+        //覆盖文件
+        overwrite: true
+    }, {
+        "template": "mapper.fc",
+        "outSuffix": "Mapper.java",
+        "outPath": "/tourist-service/src/main/java/com/zh/tourist/dao",
+        "project": "tourist-service",
+        overwrite: true
+    }, {
+        "template": "mapper.xml.fc",
+        "outSuffix": "Mapper.xml",
+        "outPath": "/tourist-service/src/main/resources/mybatis/mapper",
+        overwrite: true
+    },
         {
             "template": "service.fc",
             "outSuffix": "Service.java",
@@ -95,16 +100,6 @@ exports.config = {
             table: 'ad_space',
             remark: '广告位模块',
             url: '/ad/space/',
-
-            //不存数据库，引用其他模块的字段
-            // fields: [{
-            //     field: "items",
-            //     //表示为数组引用，如果是字符串
-            //     type: ['$AdSpaceItem'],
-            // }, {
-            //     field: 'adItem',
-            //     type: '$AdSpaceItem'
-            // }],
             methods: [{
                 name: 'saveTest',
                 remark: '保存测试',
@@ -144,51 +139,67 @@ exports.config = {
         AdSpaceItem: {
             table: 'ad_space_item',
             remark: '广告位详情',
-            url: '/ad/space/item/'
+            url: '/ad/space/item/',
+            controller: false
         },
-        // Contact: {
-        //     table: 'contact',
-        //     remark: '联系人',
-        //     url: '/contact'
-        // },
-        // Order: {
-        //     table: 'order',
-        //     remark: '订单',
-        //     url: '/order'
-        // },
-        // OrderItem: {
-        //     table: 'order_item',
-        //     remark: '订单详情',
-        //     url: '/order/item'
-        // },
-        // OrderComment: {
-        //     table: 'order_comment',
-        //     remark: '订单评价',
-        //     url: '/order/comment'
-        // },
-        // OrderRefund: {
-        //     table: 'order_refund',
-        //     remark: '订单退款',
-        //     url: '/order/refund'
-        // },
-        // Scenic: {
-        //     table: 'scenic',
-        //     remark: '景点',
-        //     url: '/scenic'
-        // },
-        // ScenicCategory: {
-        //     table: 'scenic_category',
-        //     remark: '景点标签',
-        //     url: '/scenic/tag'
-        // },
-        // ScenicCategoryMapper: {
-        //     table: 'scenic_category_mapper',
-        //     remark: '景点标签映射'
-        // },
-        // ScenicTicket: {
-        //     table: 'scenic_ticket',
-        //     remark: '景点门票',
-        //     url: '/scenic/ticket'
-        // }
+        Contact: {
+            table: 'contact',
+            remark: '联系人',
+            url: '/contact',
+            verify: {
+                save: ['userId', 'mobile', 'name'],
+                update: ['id'],
+                delete: ['id'],
+                list: ['userId']
+            }
+        },
+        Order: {
+            table: 'order',
+            remark: '订单',
+            url: '/order'
+        },
+        OrderItem: {
+            table: 'order_item',
+            remark: '订单详情',
+            url: '/order/item',
+            controller: false
+        },
+        OrderComment: {
+            table: 'order_comment',
+            remark: '订单评价',
+            url: '/order/comment',
+            verify: {
+                save: ['userId', 'orderId', 'star', 'content'],
+                update: ['id'],
+                delete: ['id'],
+                list: ['userId']
+            }
+        },
+        OrderRefund: {
+            table: 'order_refund',
+            remark: '订单退款',
+            url: '/order/refund'
+        },
+        Scenic: {
+            table: 'scenic',
+            remark: '景点',
+            url: '/scenic'
+        },
+        ScenicTag: {
+            table: 'scenic_tag',
+            remark: '景点标签',
+            url: '/scenic/tag',
+            controller: false
+        },
+        ScenicTagRelation: {
+            table: 'scenic_tag_relation',
+            remark: '景点标签映射',
+            controller: false
+        },
+        ScenicTicket: {
+            table: 'scenic_ticket',
+            remark: '景点门票',
+            controller: false
+        }
     }
 }

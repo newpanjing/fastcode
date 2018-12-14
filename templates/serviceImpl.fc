@@ -48,7 +48,7 @@ public class ${modelName}ServiceImpl extends BaseServiceImpl<${modelName}> imple
     }
 
     @Override
-    public int insertSelective(AdSpace {{modelName|low_first}}) {
+    public int insertSelective(${modelName} {{modelName|low_first}}) {
 
         <%if(isField('updateTime')){%>{{modelName|low_first}}.setUpdateTime(new Date());<%}%>
         <%if(isField('createTime')){%>{{modelName|low_first}}.setCreateTime(new Date());<%}%>

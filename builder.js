@@ -95,8 +95,16 @@ function processTemplates(models, callback) {
         //循环模板
 
         async.map(config.templates, (template, callback) => {
-            model.project = template.project;
 
+            model.project = template.project;
+            //不生成控制器
+            if (template.template == "controller.fc") {
+                if (typeof (model.model.controller) != 'undefined' && model.model.controller == false) {
+                    console.log('不生成：' + template.template)
+                    callback(null, template.controller);
+                    return;
+                }
+            }
             var content = render(template.template, model);
 
             //写入文件，文件路径需要自己去创建，默认不创建，防止写错文件且发现不了
@@ -352,7 +360,7 @@ function process_models(models) {
                     var def = render('./method/defined.fc', data);
 
                     var impl = render('./method/body.fc', data);
-                    var controller = render('./method/controller.fc',data);
+                    var controller = render('./method/controller.fc', data);
                     baseModel.compile[m.name] = {
                         def: def,
                         impl: impl,
