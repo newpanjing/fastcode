@@ -1,0 +1,37 @@
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <style type="text/css">
+        table{
+            border-collapse: collapse;
+        }
+        table td{border:1px solid #000}
+    </style>
+</head>
+<body>
+    <h1>${modelRemark}-添加</h1>
+    <div style="font-family: 'Songti SC';font-size: 12px;">请求参数：</div>
+    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+            <td width="150">请求地址</td>
+            <td colspan="3">${url}</td>
+        </tr>
+        <tr>
+            <td>变量名</td>
+            <td>类型</td>
+            <td>是否为空</td>
+            <td>备注</td>
+        </tr>
+        <%for( var i in columns){
+            var item=columns[i];
+        %>
+        <tr>
+            <td>${item.fieldName}</td>
+            <td>${item.typeName}</td>
+            <td></td>
+            <td>${item.remark}</td>
+        </tr>
+        <%}%>
+    </table>
+</body>
+</html>
