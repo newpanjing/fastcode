@@ -6,7 +6,7 @@ var fs = require('fs');
 var path = require('path');
 
 var art = require('art-template');
-
+var compile = require('./compile');
 var connection = mysql.createConnection({
     host: db.host,
     port: db.port,
@@ -88,30 +88,16 @@ function process() {
 function processTemplates(models, callback) {
 
     async.map(models, function (model, callback) {
-        //读取模板文件
-        art.defaults.rules.push({
-            test: /\${([\w\W]*?)}/,
-            use: function (match, code) {
-                return {
-                    code: code,
-                    output: 'escape'
-                }
-            }
-        });
 
+        //对models 的action进行预处理
+        process_models(models);
 
-        art.defaults.imports.up_first = function (str) {
-            return str.substring(0, 1).toUpperCase() + str.substring(1);
-        }
-        art.defaults.imports.low_first = function (str) {
-            return str.substring(0, 1).toLowerCase() + str.substring(1);
-        }
         //循环模板
 
         async.map(config.templates, (template, callback) => {
             model.project = template.project;
-            var source = fs.readFileSync(path.join(__dirname, `./templates/${template.template}`), 'utf8');
-            var content = art.render(source, model);
+
+            var content = render(template.template, model);
 
             //写入文件，文件路径需要自己去创建，默认不创建，防止写错文件且发现不了
             var dir = config.general.basePath + template.outPath;
@@ -170,7 +156,10 @@ function processModels(callback) {
             url: item.url,
             tableName: item.table,
             columns: [],
-            packages: []
+            packages: [],
+            model: item,
+            fields: item.fields,
+            allFields: []
 
         };
         models.push(model);
@@ -196,7 +185,11 @@ function processModels(callback) {
                 if (model.packages.indexOf(fieldType.package) == -1) {
                     model.packages.push(fieldType.package);
                 }
-
+                model.allFields.push({
+                    field: field,
+                    type: fieldType.typeName,
+                    remark: info.comment
+                });
                 model.columns.push({
                     columnName: column,
                     fieldName: field,
@@ -278,4 +271,242 @@ function mkdirs(path) {
             fs.mkdirSync(dir);
         }
     })
+}
+
+/**
+ * 处理模型里面的action
+ * @param models
+ */
+function process_models(models) {
+
+
+    //把methods 编译为字符串
+    for (var key in models) {
+        var baseModel = models[key];
+        var model = baseModel.model;
+        if (model.methods) {
+            model.methods.forEach(m => {
+                    var result = 'void';
+                    var returnStr = "";
+
+                    var variable = baseModel.modelName.toLowFirst();
+                    var bean = baseModel.modelName;
+                    //TODO 优化
+                    if (m.result) {
+                        if (m.result instanceof Array) {
+                            if (m.result[0] == "$this") {
+                                result = `List<${bean}>`;
+                                returnStr = `
+        List<${bean}> ${variable}s=new ArrayList<>();
+        ${variable}s.add(${variable});
+        
+        return ${variable}s;
+        `;
+                            } else {
+                                result = `List<${m.result[0]}>`;
+                                returnStr = `
+        List<${m.result[0]}> ${variable}s=new ArrayList<>();
+        
+        return ${variable}s;
+        `;
+
+                            }
+                        } else if (typeof (m.result) == "object") {
+                            //对象是key value 形式
+                            for (var i in m.result) {
+                                result = i;
+                                returnStr = `return ${m.result[i]};`;
+                            }
+
+                        } else {
+                            if (m.result == "$this") {
+                                result = baseModel.modelName;
+                                returnStr = `return ${variable};`;
+                            } else if (m.result.indexOf("$") == 0) {
+                                var field = m.result.replace(/\$/g, "");
+                                result = getFieldType(field, baseModel);
+                                returnStr = `return ${variable}.get${field.toUpFirst()}();`;
+
+                            } else {
+                                result = m.result;
+                                returnStr = `return null;`;
+                            }
+                        }
+                    }
+                    if (!baseModel.compile) {
+                        baseModel.compile = {};
+                    }
+
+
+                    //处理save
+                    var methodImpl = process_save(models, baseModel, m);
+                    var data = {
+                        remark: m.remark,
+                        name: m.name,
+                        modelName: baseModel.modelName,
+                        result: result,
+                        returnStr: returnStr,
+                        methodImpl: methodImpl,
+                        url: m.url
+                    }
+                    var def = render('./method/defined.fc', data);
+
+                    var impl = render('./method/body.fc', data);
+                    var controller = render('./method/controller.fc',data);
+                    baseModel.compile[m.name] = {
+                        def: def,
+                        impl: impl,
+                        controller: controller
+                    }
+                }
+            )
+        }
+    }
+}
+
+function render(file, data) {
+    //读取模板文件
+    art.defaults.rules.push({
+        test: /\${([\w\W]*?)}/,
+        use: function (match, code) {
+            return {
+                code: code,
+                output: 'escape'
+            }
+        }
+    });
+
+    art.defaults.debug = true;
+    art.defaults.extname = '.fc';
+    art.defaults.imports.up_first = function (str) {
+        return str.substring(0, 1).toUpperCase() + str.substring(1);
+    }
+    art.defaults.imports.low_first = function (str) {
+        return str.substring(0, 1).toLowerCase() + str.substring(1);
+    }
+    art.defaults.imports.processResult = compile.processResult;
+    art.defaults.imports.console = console;
+    art.defaults.imports.Array = Array;
+    art.defaults.root = path.join(__dirname, './templates');
+    var source = fs.readFileSync(path.join(__dirname, `./templates/${file}`), 'utf8');
+    return art.render(source, data);
+}
+
+function getAllField(field, model) {
+    for (var i in model.allFields) {
+        var f = model.allFields[i];
+        if (f.field == field) {
+            return f;
+        }
+    }
+}
+
+function getFieldType(field, model) {
+    return getAllField(field, model).type;
+
+}
+
+/**
+ * 处理保存
+ * @param models
+ * @param method
+ */
+function process_save(models, model, method) {
+
+    var variables = {
+        '$now': 'new Date()',
+        '$uuid': 'UUIDUtil.get()',
+    }
+
+    var list = [];
+    var actions = method.actions;
+
+    var modelName = model.modelName;
+    var variable = modelName.toLowFirst();
+
+    if (actions) {
+        var data = {};
+        for (var i in actions) {
+            var temp = actions[i];
+            var type, obj;
+
+            for (var k in temp) {
+                type = k;
+                obj = temp[k];
+            }
+            //凑数据，调用模板编译
+            var data = handler(obj, variables, variable, model);
+            data.model = model;
+            var fileMappers = {
+                save: './method/saveImpl.fc',
+                update: './method/updateImpl.fc'
+            }
+            var file = fileMappers[type];
+            if (file) {
+                list.push(render(file, data));
+            }
+
+        }
+    }
+
+    return list.join("\n");
+}
+
+
+function getFieldByObject(obj, variables, variable, model) {
+
+    var fields = [];
+
+    var regex = /\$[\w|\d]+/;
+    for (var key in obj) {
+        //不处理$key
+        if (regex.test(key)) {
+            continue;
+        }
+        var value = "";
+        var valueKey = obj[key];
+        if (regex.test(valueKey)) {
+            value = variables[valueKey]
+            if (!value) {
+                value = `${variable}.get${valueKey.replace(/\$/, "").toUpFirst()}()`;
+            }
+        } else if (typeof (valueKey) == "string") {
+            value = `"${valueKey}"`;
+        } else {
+            value = `${valueKey}`;
+        }
+
+        var field = `${variable}.set${key.toUpFirst()}`;
+        var remark = field;
+        var fieldType = getAllField(key, model);
+        if (fieldType) {
+            remark = fieldType.remark;
+        }
+        fields.push({
+            key: field,
+            value: value,
+            remark: remark,
+            toString: function () {
+                return `//${remark}\n${field}(${value});`;
+            }
+        })
+    }
+    return fields;
+}
+
+function handler(data, variables, variable, model) {
+    var rs = {
+        fields: []
+    };
+
+
+    var ref = data["$ref"];
+    if (ref) {
+        rs.ref = [];
+        rs.ref = getFieldByObject(ref, variables, variable, model);
+    }
+
+    rs.fields = getFieldByObject(data, variables, variable, model);
+
+    return rs;
 }

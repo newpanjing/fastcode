@@ -1,0 +1,10 @@
+    //保存部分
+    <%
+    for(var i in fields){
+        var item=fields[i];
+    %>
+        <%if(item.remark&&item.remark!=""){%>//${item.remark}<%}%>
+        ${item.key}(<%-item.value%>);
+    <%}%>
+        //只插入adSpace有值的字段
+        {{model.modelName|low_first}}Mapper.insertSelective({{model.modelName|low_first}});

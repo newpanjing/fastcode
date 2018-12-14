@@ -11,6 +11,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.lang.*;
+import java.util.*;
 
 /**
  * ${modelRemark} 控制器
@@ -30,9 +32,20 @@ public class ${modelName}Controller extends BaseController{
     @Reference
     private ${modelName}Service ${service};
 
+    <%if(compile){%>
+    <%for(var i in compile){
+        var m = compile[i];
+    %>
+    <%=#m.controller%>
+    <%}}%>
+
+
+
     /**
      * 保存
      *
+     * @param ${variable}
+     * @return
      **/
     @ResponseBody
     @RequestMapping("save")
@@ -41,18 +54,23 @@ public class ${modelName}Controller extends BaseController{
         Result result = Result.getError(StatusCode.SYSTEM_ERROR);
 
         try {
-            int rs=${service}.insertSelective(${variable});
-            result=Result.getSuccess(rs);
+
+            int rs = ${service}.insertSelective(${variable});
+            result = Result.getSuccess(rs);
+
         } catch (Exception e) {
-          log.error("error:",e);
+            log.error("error:",e);
         }
+
         return result;
     }
 
-    /**
-      * 修改
-     *
-     **/
+   /**
+    * 修改
+    *
+    * @param ${variable}
+    * @return
+    **/
     @ResponseBody
     @RequestMapping("update")
     public Result update(${modelName} ${variable}) {
@@ -62,8 +80,8 @@ public class ${modelName}Controller extends BaseController{
         Result result = Result.getError(StatusCode.SYSTEM_ERROR);
 
         try {
-            int rs=${service}.updateByPrimaryKeySelective(${variable});
-         result=Result.getSuccess(rs);
+            int rs = ${service}.updateByPrimaryKeySelective(${variable});
+            result = Result.getSuccess(rs);
         } catch (Exception e) {
             log.error("error:",e);
         }
@@ -71,23 +89,52 @@ public class ${modelName}Controller extends BaseController{
         return result;
     }
 
-     /**
-      * 获取列表
-      *
-      **/
+    /**
+     * 分页获取列表
+     *
+     * @param pageNo
+     * @param pageSize
+     * @param ${variable}
+     * @return
+     */
     @ResponseBody
     @RequestMapping("list")
-    public Result getList(Integer pageNo,Integer pageSize,${modelName} ${variable}) {
+    public Result getList(Integer pageNo, Integer pageSize, ${modelName} ${variable}) {
         Result result = Result.getError(StatusCode.SYSTEM_ERROR);
+
         try {
-            DataGrid dataGrid=${service}.getDataGridByModel(${variable},new Pager(pageNo,pageSize));
-            result=Result.getSuccess(dataGrid);
+            DataGrid dataGrid = ${service}.getDataGridByModel(${variable}, new Pager(pageNo,pageSize));
+            result = Result.getSuccess(dataGrid);
         } catch (Exception e) {
-            log.error("error:",e);
+            log.error("error:", e);
         }
+
         return result;
     }
 
+    /**
+     * 根据id逻辑删除
+     *
+     * @param id
+     * @return
+     **/
+    @ResponseBody
+    @RequestMapping("delete")
+    public Result deleteById(String id) {
+
+        checkValues("id");
+
+        Result result = Result.getError(StatusCode.SYSTEM_ERROR);
+
+        try {
+            int rs = ${service}.deleteById(id);
+            result = Result.getSuccess(rs);
+        } catch (Exception e) {
+            log.error("error:", e);
+        }
+
+        return result;
+    }
 }
 
 

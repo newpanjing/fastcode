@@ -8,6 +8,7 @@
   "dependencies": {
     "art-template": "^4.13.2",
     "async": "^2.6.1",
+    "ejs": "^2.6.1",
     "mysql": "^2.16.0"
   }
 }

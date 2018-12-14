@@ -1,0 +1,26 @@
+        //更新部分
+        <%if(ref){%>
+        //没有id，根据条件查询，得到id后进行更新
+        ${model.modelName} query = new ${model.modelName}();
+        <%for(var i in ref){
+            var item = ref[i];
+        %>
+        <%if(item.remark&&item.remark!=""){%>//${item.remark}<%}%>
+        ${item.key}(<%-item.value%>);
+        <%}%>
+
+        //根据条件从数据库取出对象
+        AdSpace db = adSpaceMapper.selectOne(query);
+
+        //不为null的时候，进行更新
+        if (db != null) {
+            adSpace.setId(db.getId());
+        }
+        <%}%>
+        <%for(var i in fields){
+            var item = fields[i];
+        %>
+        <%if(item.remark&&item.remark!=""){%>//${item.remark}<%}%>
+        ${item.key}(<%-item.value%>);
+        <%}%>
+        {{model.modelName|low_first}}Mapper.updateByPrimaryKeySelective({{model.modelName|low_first}});

@@ -1,6 +1,6 @@
 exports.config = {
     general: {
-        packageName: "com.zh.car",
+        packageName: "com.zh.tourist",
         db: {
             host: "192.168.1.179",
             port: 3306,
@@ -8,45 +8,54 @@ exports.config = {
             username: "root",
             password: "zh2018"
         },
-        basePath: "/Users/panjing/Downloads/car-parent",
+        basePath: "/Users/panjing/dev/tourist-parent",
+        // basePath: "/Users/panjing/Downloads/",
         author: "panjing",
         //自动创建文件夹
         mkdirs: true
     },
-    templates: [{
-        "template": "entity.fc",
-        "outSuffix": ".java",
-        "outPath": "/car-common/src/main/java/com/zh/car/entity",
-        "project": "car-common",
-        //覆盖文件
-        overwrite: true
-    }, {
-        "template": "mapper.fc",
-        "outSuffix": "Mapper.java",
-        "outPath": "/car-service/src/main/java/com/zh/car/dao",
-        "project": "car-service",
-        overwrite: true
-    }, {
-        "template": "mapper.xml.fc",
-        "outSuffix": "Mapper.xml",
-        "outPath": "/car-service/src/main/resources/mybatis/mapper",
-        overwrite: true
-    }, {
-        "template": "service.fc",
-        "outSuffix": "Service.java",
-        "outPath": "/car-common/src/main/java/com/zh/car/service",
-        "project": "car-common"
-    }, {
-        "template": "serviceImpl.fc",
-        "outSuffix": "ServiceImpl.java",
-        "outPath": "/car-service/src/main/java/com/zh/car/service/impl",
-        "project": "car-service"
-    }, {
-        "template": "controller.fc",
-        "outSuffix": "Controller.java",
-        "outPath": "/car-api/src/main/java/com/zh/car/api/controller",
-        "project": "car-api"
-    }
+    templates: [
+        {
+            "template": "entity.fc",
+            "outSuffix": ".java",
+            "outPath": "/tourist-common/src/main/java/com/zh/tourist/entity",
+            "project": "tourist-common",
+            //覆盖文件
+            overwrite: true
+        },
+// , {
+        //     "template": "mapper.fc",
+        //     "outSuffix": "Mapper.java",
+        //     "outPath": "/tourist-service/src/main/java/com/zh/tourist/dao",
+        //     "project": "tourist-service",
+        //     overwrite: true
+        // }, {
+        //     "template": "mapper.xml.fc",
+        //     "outSuffix": "Mapper.xml",
+        //     "outPath": "/tourist-service/src/main/resources/mybatis/mapper",
+        //     overwrite: true
+        // },
+        {
+            "template": "service.fc",
+            "outSuffix": "Service.java",
+            "outPath": "/tourist-common/src/main/java/com/zh/tourist/service",
+            "project": "tourist-common",
+            overwrite: true
+        },
+        {
+            "template": "serviceImpl.fc",
+            "outSuffix": "ServiceImpl.java",
+            "outPath": "/tourist-service/src/main/java/com/zh/tourist/service/impl",
+            "project": "tourist-service",
+            overwrite: true
+        }
+        , {
+            "template": "controller.fc",
+            "outSuffix": "Controller.java",
+            "outPath": "/tourist-api/src/main/java/com/zh/tourist/api/controller",
+            "project": "tourist-api",
+            overwrite: true
+        }
     ],
     //数据库类型对代码类型的映射
     typeMappers: {
@@ -82,20 +91,104 @@ exports.config = {
     },
     //模块
     models: {
-        SysUser: {
-            table: 'sys_user',
-            remark: '系统用户',
-            url: 'sys/user'
+        AdSpace: {
+            table: 'ad_space',
+            remark: '广告位模块',
+            url: '/ad/space/',
+
+            //不存数据库，引用其他模块的字段
+            // fields: [{
+            //     field: "items",
+            //     //表示为数组引用，如果是字符串
+            //     type: ['$AdSpaceItem'],
+            // }, {
+            //     field: 'adItem',
+            //     type: '$AdSpaceItem'
+            // }],
+            methods: [{
+                name: 'saveTest',
+                remark: '保存测试',
+                url: '/test',
+                //result 分为map和list，如果是list直接add 字段，如果是map xxx.put(key,value)
+                //一个 字段的类型，多个object
+                //单个字段 单个返回
+                result: ['$this'],
+                // result: {$ref:['id','createTime']},
+                actions: [{
+                    'save': {
+                        id: '$uuid',
+                        createTime: '$now',
+                        updateTime: '$createTime',
+                        alias: 'aaa',
+                        type: 1
+                    }
+                }]
+            }, {
+                name: 'updateTest',
+                remark: '更新测试',
+                url: '/update',
+                result: '$this',
+                actions: [{
+                    "update": {
+                        $ref: {
+                            id: '$id',
+                            name: '123',
+                            type: 111,
+                        },
+                        updateTime: '$now',
+                        createTime: '$createTime'
+                    }
+                }]
+            }]
         },
-        // SysRole: {
-        //     table: "sys_role",
-        //     remark: '角色模块',
-        //     url: 'sys/role',
-        //     //引用其他模块的字段
-        //     fields: [],
-        //
-        //     //操作方法
-        //     methods: {}
+        AdSpaceItem: {
+            table: 'ad_space_item',
+            remark: '广告位详情',
+            url: '/ad/space/item/'
+        },
+        // Contact: {
+        //     table: 'contact',
+        //     remark: '联系人',
+        //     url: '/contact'
+        // },
+        // Order: {
+        //     table: 'order',
+        //     remark: '订单',
+        //     url: '/order'
+        // },
+        // OrderItem: {
+        //     table: 'order_item',
+        //     remark: '订单详情',
+        //     url: '/order/item'
+        // },
+        // OrderComment: {
+        //     table: 'order_comment',
+        //     remark: '订单评价',
+        //     url: '/order/comment'
+        // },
+        // OrderRefund: {
+        //     table: 'order_refund',
+        //     remark: '订单退款',
+        //     url: '/order/refund'
+        // },
+        // Scenic: {
+        //     table: 'scenic',
+        //     remark: '景点',
+        //     url: '/scenic'
+        // },
+        // ScenicCategory: {
+        //     table: 'scenic_category',
+        //     remark: '景点标签',
+        //     url: '/scenic/tag'
+        // },
+        // ScenicCategoryMapper: {
+        //     table: 'scenic_category_mapper',
+        //     remark: '景点标签映射'
+        // },
+        // ScenicTicket: {
+        //     table: 'scenic_ticket',
+        //     remark: '景点门票',
+        //     url: '/scenic/ticket'
         // }
     }
 }

@@ -1,0 +1,7 @@
+{{extend './method/defined.fc'}}
+{{block 'annotation'}}@Override{{/block}}
+<% block('body', function(){ %> {
+
+    <%- methodImpl %>
+        <%- returnStr %>
+    }<%}) %>

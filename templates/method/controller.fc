@@ -1,0 +1,22 @@
+   {{extend './method/defined.fc'}}
+   {{block 'annotation'}}
+   @ResponseBody
+   @RequestMapping("${url}")
+   {{/block}}
+   {{block 'result'}}Result{{/block}}
+   <% block('body', function(){ %> {
+
+       Result result = Result.getError();
+       try {
+        <%if(result=='void'){%>
+            {{modelName|low_first}}Service.${name}({{modelName|low_first}});
+            result = Result.getSuccess();
+        <%}else{%>
+           <%-result%> rs = {{modelName|low_first}}Service.${name}({{modelName|low_first}});
+           result = Result.getSuccess(rs);
+        <%}%>
+       } catch (Exception e) {
+            log.error(e);
+       }
+       return result;
+   }<%}) %>

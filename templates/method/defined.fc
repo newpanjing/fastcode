@@ -1,0 +1,8 @@
+    /**
+     * ${remark || name}
+     *
+     * @param {{modelName|low_first}}
+     * @return <%-result%>
+     */
+    {{block 'annotation'}}{{/block}}
+    public {{block 'result'}}<%-result%>{{/block}} ${name}(${modelName} ${modelName.toLowFirst()})<% block('body', function(){ %>;<% }) %>

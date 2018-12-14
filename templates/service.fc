@@ -1,6 +1,8 @@
 package ${packageName}.service;
 
 import ${packageName}.entity.${modelName};
+import java.util.*;
+import java.lang.*;
 
 /**
  * ${modelRemark} service
@@ -11,5 +13,17 @@ import ${packageName}.entity.${modelName};
  */
 public interface ${modelName}Service extends BaseService<${modelName}>{
 
+    /**
+    * 根据id 逻辑标识为删除
+    * @param id
+    * @return
+    */
+    int deleteById(String id);
+    <%if(compile){%>
+    <%for(var i in compile){
+     var m = compile[i];
+    %>
+    <%=#m.def%>
+    <%}}%>
 
 }

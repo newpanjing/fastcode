@@ -104,3 +104,57 @@ npm start
             {{aa | up_first}}
         ```
         输出 china
+        
+        
+# actions
+> key 不支持变量
++ 字段
+
+    |字段名|说明|
+    |---|---|
+    |name|方法名|
+    |remark|注释|
+    |url|请求地址|
+    |result|[返回类型](#返回类型)|
+    
++ 返回类型
+  支持对象、数组、常规类型
+  + 返回list
+  > ['aa']
+    + 返回当前对象
+    > ['$this']
+    + 返回当前对象的字段
+    > ['$id']
+  + 返回对象
+  > '$this'
+    + 返回对象的字段
+    > '$id'
+  + 返回普通类型
+  > {"Integer": '123'}
+  
++ 内置变量
+
+    |变量|说明|
+    |---|---|
+    |$this|当前模块|
+    |$now|当前日期|
+    |$uuid|uuid|
+    
+```javascript
+methods: [{
+                name: 'test',
+                remark: '测试',
+                url: '/test',
+                result:['$id'],
+                actions: [{
+                    'save': {
+                        id: '$id',
+                        id: '$uuid',
+                        createTime: '$now',
+                        updateTime: '$createTime',
+                        alias: 'aaa',
+                        type: 1
+                    }
+                }]
+            }]
+```

@@ -3,9 +3,14 @@ package ${packageName}.service.impl;
 import ${packageName}.entity.${modelName};
 import ${packageName}.service.${modelName}Service;
 import ${packageName}.dao.${modelName}Mapper;
+import com.zh.tourist.core.constant.MyConstant;
+import com.zh.tourist.core.util.UUIDUtil;
 
 import com.alibaba.dubbo.config.annotation.Service;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.*;
+import java.lang.*;
 
 /**
  * ${modelRemark} service实现
@@ -16,10 +21,53 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 @Service
 public class ${modelName}ServiceImpl extends BaseServiceImpl<${modelName}> implements ${modelName}Service {
-
+    <%
+        function isField(field) {
+            var rs = false;
+            for(var i in allFields){
+                var item = allFields[i];
+                if(item.field==field){
+                    rs = true;
+                    break;
+                }
+            }
+            return rs;
+        }%>
 	@Autowired
 	private ${modelName}Mapper {{modelName|low_first}}Mapper;
 
+    @Override
+    public int deleteById(String id) {
 
+        ${modelName} {{modelName|low_first}} = new ${modelName}();
+        {{modelName|low_first}}.setId(id);
+        <%if(isField('isDelete')){%>
+        {{modelName|low_first}}.setIsDelete(MyConstant.IS_DELETE_YES);
+        <%}%>
+        return {{modelName|low_first}}Mapper.updateByPrimaryKeySelective({{modelName|low_first}});
+    }
 
+    @Override
+    public int insertSelective(AdSpace {{modelName|low_first}}) {
+
+        <%if(isField('updateTime')){%>{{modelName|low_first}}.setUpdateTime(new Date());<%}%>
+        <%if(isField('createTime')){%>{{modelName|low_first}}.setCreateTime(new Date());<%}%>
+        <%if(isField('isDelete')){%>{{modelName|low_first}}.setIsDelete(MyConstant.IS_DELETE_NO);<%}%>
+
+        return super.insertSelective({{modelName|low_first}});
+    }
+
+    @Override
+    public int updateByPrimaryKeySelective(${modelName} {{modelName|low_first}}) {
+
+        <%if(isField('updateTime')){%>{{modelName|low_first}}.setUpdateTime(new Date());<%}%>
+
+        return super.updateByPrimaryKeySelective({{modelName|low_first}});
+    }
+    <%if(compile){%>
+    <%for(var i in compile){
+        var m = compile[i];
+    %>
+    <%=#m.impl%>
+    <%}}%>
 }

@@ -22,7 +22,19 @@ public class ${modelName} implements Serializable {
     @Id<%}%>
     private ${item.typeName} ${item.fieldName};
     <%}%>
+    <%if(fields){%>
+    //不存数据库的字段
+    <%for(var i in fields){
+        var f=fields[i]
+    %>
+    private <%=#f.type%> <%=#f.field%>;
 
+    public void set<%=#f.field|up_first%>(${f.type} ${f.field}){
+
+        this.${f.field}=${f.field};
+    }
+    <%}%>
+    <%}%>
 	//set 和 get方法
 	
 	<% for(var i in columns){
