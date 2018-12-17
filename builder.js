@@ -64,18 +64,24 @@ function process() {
     //字段：packageName、modelRemark、modelName、author、、now、url、tableName、idField、idFieldName、columns、
 
     //project
-
+    var tempModels;
     //columns: fieldName、typeName、columnName、
     async.waterfall([function (callback) {
         //处理表结构
         processModels(callback);
     }, function (models, callback) {
+        tempModels = models;
         processTemplates(models, callback);
     }], function (err, result) {
-        console.log(result[0])
         console.log('所有模板处理完成')
         //关闭mysql连接
         connection.end();
+        //处理自定义方法
+        if (config.extends) {
+            config.extends.forEach(fun => {
+                fun.call({models: tempModels})
+            });
+        }
     })
 
 }
@@ -97,12 +103,11 @@ function processTemplates(models, callback) {
         async.map(config.templates, (template, callback) => {
 
             model.project = template.project;
-            //不生成控制器
-            if (template.template == "controller.fc") {
-                if (typeof (model.model.controller) != 'undefined' && model.model.controller == false) {
-                    console.log('不生成：' + template.template)
-                    callback(null, template.controller);
-                    return;
+            if (config.filter) {
+                var rs = config.filter.call(this, model, template);
+                if(!rs){
+                    //中断
+                    return callback(null, template.template);
                 }
             }
             var content = render(template.template, model);
@@ -372,6 +377,7 @@ function process_models(models) {
     }
 }
 
+
 function render(file, data) {
     //读取模板文件
     art.defaults.rules.push({
@@ -399,6 +405,7 @@ function render(file, data) {
     var source = fs.readFileSync(path.join(__dirname, `./templates/${file}`), 'utf8');
     return art.render(source, data);
 }
+exports.render = render;
 
 function getAllField(field, model) {
     for (var i in model.allFields) {

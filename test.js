@@ -1,16 +1,8 @@
-var fs = require('fs');
+function aaa(p) {
+    console.log(p)
+    console.log(this)
+    return 123
+}
 
-var path = '/Users/panjing/Downloads/aaa/vvv/vsdasd/sad/asdas/dsadsaasd/asda/asd/sas/';
-
-var temps=[]
-path.split(/\/|\\/).forEach(str=>{
-    temps.push(str);
-    if(temps.length<=1){
-        return;
-    }
-    var dir = temps.join("/");
-    console.log(dir)
-    if(!fs.existsSync(dir)){
-        fs.mkdirSync(dir);
-    }
-})
+var rs=aaa.call({a:123},1);
+console.log("返回："+rs)

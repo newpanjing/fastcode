@@ -15,13 +15,6 @@ exports.config = {
         mkdirs: true
     },
     templates: [{
-        "template": "api.html",
-        "outSuffix": ".html",
-        "outPath": "/doc",
-        "project": "tourist-common",
-        //覆盖文件
-        overwrite: true
-    }, {
         "template": "entity.fc",
         "outSuffix": ".java",
         "outPath": "/tourist-common/src/main/java/com/zh/tourist/entity",
@@ -140,7 +133,6 @@ exports.config = {
             table: 'ad_space_item',
             remark: '广告位详情',
             url: '/ad/space/item/',
-            controller: false
         },
         Contact: {
             table: 'contact',
@@ -162,7 +154,6 @@ exports.config = {
             table: 'order_item',
             remark: '订单详情',
             url: '/order/item',
-            controller: false
         },
         OrderComment: {
             table: 'order_comment',
@@ -188,18 +179,31 @@ exports.config = {
         ScenicTag: {
             table: 'scenic_tag',
             remark: '景点标签',
-            url: '/scenic/tag',
-            controller: false
+            url: '/scenic/tag'
         },
         ScenicTagRelation: {
             table: 'scenic_tag_relation',
-            remark: '景点标签映射',
-            controller: false
+            remark: '景点标签映射'
         },
         ScenicTicket: {
             table: 'scenic_ticket',
-            remark: '景点门票',
-            controller: false
+            remark: '景点门票'
         }
-    }
+    },
+    //过滤器，执行每个model的时候调用
+    filter: function (model,template) {
+        // if (template.template == 'controller.fc') {
+        //     //不生成控制器
+        //     return false;
+        // }
+        return true;
+    },
+    //扩展方法，执行完所有模块后调用
+    extends: [function () {
+
+        //生成api文档
+        require('./builder-doc').build(this.models,()=>{
+            console.log('文档生成完成。');
+        });
+    }]
 }

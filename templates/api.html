@@ -2,19 +2,54 @@
 <head>
     <meta charset="UTF-8">
     <style type="text/css">
-        table{
+        * {
+            font-family: 'Microsoft YaHei,WenQuanYi Micro Hei,sans-serif';
+            font-size: 12px;
+        }
+
+        h1 {
+            font-size: 32px;
+        }
+
+        h2 {
+            font-size: 24px;
+        }
+
+        div {
+            margin: 10px 0;
+        }
+
+        table {
             border-collapse: collapse;
         }
-        table td{border:1px solid #000}
+
+        table td {
+            border: 1px solid #000;
+            padding: 3px;
+
+        }
     </style>
 </head>
 <body>
-    <h1>${modelRemark}-添加</h1>
-    <div style="font-family: 'Songti SC';font-size: 12px;">请求参数：</div>
+<%
+for(var i in models){
+    var model=models[i];
+    if(!model.url){
+        continue;
+    }
+    if(model.url.lastIndexOf("/")!=model.url.length-1){
+        model.url=model.url+"/";
+    }
+
+%>
+<h1>${model.modelRemark}</h1>
+<div>
+    <h2>${model.modelRemark}-添加</h2>
+    <div>请求参数：</div>
     <table width="100%" border="0" cellspacing="0" cellpadding="0">
         <tr>
             <td width="150">请求地址</td>
-            <td colspan="3">${url}</td>
+            <td colspan="3">${model.url}save</td>
         </tr>
         <tr>
             <td>变量名</td>
@@ -22,16 +57,161 @@
             <td>是否为空</td>
             <td>备注</td>
         </tr>
-        <%for( var i in columns){
-            var item=columns[i];
+        <%
+        var mappers=['id','createTime','updateTime','isDelete'];
+        for(var i in model.columns){
+            var item=model.columns[i];
+            if(mappers.indexOf(item.fieldName)!=-1){
+                continue;
+            }
         %>
         <tr>
             <td>${item.fieldName}</td>
             <td>${item.typeName}</td>
-            <td></td>
+            <td>Y</td>
             <td>${item.remark}</td>
         </tr>
         <%}%>
     </table>
+    <div>返回参数：</div>
+    <div>参照系统状态码表</div>
+</div>
+
+<div>
+    <h2>${model.modelRemark}-修改</h2>
+    <div>请求参数：</div>
+    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+            <td width="150">请求地址</td>
+            <td colspan="3">${model.url}update</td>
+        </tr>
+        <tr>
+            <td>变量名</td>
+            <td>类型</td>
+            <td>是否为空</td>
+            <td>备注</td>
+        </tr>
+        <%
+        var mappers=['createTime','updateTime','isDelete'];
+        for(var i in model.columns){
+        var item=model.columns[i];
+        if(mappers.indexOf(item.fieldName)!=-1){
+            continue;
+        }
+        %>
+        <tr>
+            <td>${item.fieldName}</td>
+            <td>${item.typeName}</td>
+            <td>${item.fieldName=='id'?'N':'Y'}</td>
+            <td>${item.remark}，不能为空</td>
+        </tr>
+        <%}%>
+    </table>
+    <div>返回参数：</div>
+    <div>参照系统状态码表</div>
+</div>
+
+<div>
+    <h2>${model.modelRemark}-删除</h2>
+    <div>请求参数：</div>
+    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+            <td width="150">请求地址</td>
+            <td colspan="3">${model.url}delete</td>
+        </tr>
+        <tr>
+            <td>变量名</td>
+            <td>类型</td>
+            <td>是否为空</td>
+            <td>备注</td>
+        </tr>
+        <tr>
+            <td>id</td>
+            <td>String</td>
+            <td>N</td>
+            <td>主键id</td>
+        </tr>
+    </table>
+    <div>返回参数：</div>
+    <div>参照系统状态码表</div>
+</div>
+
+<div>
+    <h2>${model.modelRemark}-列表</h2>
+    <div>请求参数：</div>
+    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+            <td width="150">请求地址</td>
+            <td colspan="3">${model.url}list</td>
+        </tr>
+        <tr>
+            <td>变量名</td>
+            <td>类型</td>
+            <td>是否为空</td>
+            <td>备注</td>
+        </tr>
+        <tr>
+            <td>userId</td>
+            <td>String</td>
+            <td>N</td>
+            <td>用户id</td>
+        </tr>
+        <tr>
+            <td>pageNo</td>
+            <td>Integer</td>
+            <td>Y</td>
+            <td>页码，从1开始</td>
+        </tr>
+        <tr>
+            <td>pageSize</td>
+            <td>Integer</td>
+            <td>Y</td>
+            <td>页大小</td>
+        </tr>
+    </table>
+    <div>返回参数：</div>
+
+    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+            <td>变量名</td>
+            <td>类型</td>
+            <td>备注</td>
+        </tr>
+        <tr>
+            <td>total</td>
+            <td>long</td>
+            <td>总条数</td>
+        </tr>
+        <tr>
+            <td>rows</td>
+            <td>array</td>
+            <td>数据数组</td>
+        </tr>
+    </table>
+
+    <div>rows字段：</div>
+    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+            <td>变量名</td>
+            <td>类型</td>
+            <td>备注</td>
+        </tr>
+
+        <%for(var i in model.columns){
+        var item=model.columns[i];
+        if(item.fieldName=="isDelete"){
+        continue;
+        }
+        %>
+        <tr>
+            <td>${item.fieldName}</td>
+            <td>${item.typeName}</td>
+            <td>${item.remark}</td>
+        </tr>
+        <%}%>
+    </table>
+</div>
+<%}%>
+
 </body>
 </html>
