@@ -4,7 +4,7 @@
 	
     <resultMap id="BaseResultMap" type="${packageName}.entity.${modelName}" >
         <id column="${idColumn}" property="${idField}"/>
-        <%for(var i in columns){var item=columns[i];%><%if(item.fieldName!=idField){%><result column="${item.columnName}" property="${item.fieldName}" jdbcType="${item.type}" />
+        <%for(var i in columns){var item=columns[i];%><%if(item.fieldName!=idField){%><result column="${item.columnName}" property="${item.fieldName}" />
         <%}%><%}%>
     </resultMap>
     <%var fields=[];

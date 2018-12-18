@@ -49,7 +49,7 @@ public class ${modelName}ServiceImpl extends BaseServiceImpl<${modelName}> imple
 
     @Override
     public int insertSelective(${modelName} {{modelName|low_first}}) {
-
+        {{modelName|low_first}}.setId(UUIDUtil.get());
         <%if(isField('updateTime')){%>{{modelName|low_first}}.setUpdateTime(new Date());<%}%>
         <%if(isField('createTime')){%>{{modelName|low_first}}.setCreateTime(new Date());<%}%>
         <%if(isField('isDelete')){%>{{modelName|low_first}}.setIsDelete(MyConstant.IS_DELETE_NO);<%}%>
